@@ -1,7 +1,5 @@
 # Named Entity Recognition (NER) App
 
-A Flask web app that finds and highlights named entities — people, organizations, places, dates, money, and more — in text you upload or paste, using spaCy's pretrained English model.
-
 ## How it works (in short)
 
 1. You either upload a `.txt` file or paste text directly into the form on the homepage.

@@ -1,6 +1,6 @@
 # Named Entity Recognition (NER) App
 
-## How it works (in short)
+## How it works 
 
 1. You either upload a `.txt` file or paste text directly into the form on the homepage.
 2. Flask (`app.py`) reads that text and runs it through spaCy's `en_core_web_sm` NLP pipeline.
@@ -68,6 +68,8 @@ Open this in your browser:
 ```
 http://127.0.0.1:5000
 ```
+
+Use test.txt to test it or use ur own material thank you 67
 
 ## Usage
 

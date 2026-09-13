@@ -71,6 +71,13 @@ http://127.0.0.1:5000
 
 Use test.txt to test it or use ur own material thank you 67
 
+<img width="1914" height="771" alt="image" src="https://github.com/user-attachments/assets/d2ba671c-9cac-4e63-809e-195efdd9e771" />
+<img width="1918" height="885" alt="image" src="https://github.com/user-attachments/assets/c6f88452-54c4-4f23-8a43-b8e0140cb9d4" />
+<img width="1919" height="898" alt="image" src="https://github.com/user-attachments/assets/917d8e3f-3ceb-4125-a649-88c035914a04" />
+
+
+
+
 ## Usage
 
 1. On the homepage, either drag a `.txt` file into the upload zone (or click to browse) — or paste text straight into the text box. A few one-click examples are provided if you just want to try it out.

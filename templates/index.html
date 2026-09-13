@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Named Entity Recognition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAF8F4;
+      --card: #FFFFFF;
+      --ink: #23282F;
+      --muted: #6B7280;
+      --border: #ECE7DD;
+      --teal: #2E9E86;
+      --teal-dark: #1F7A66;
+      --coral: #FF6B5B;
+      --shadow: 0 8px 24px rgba(35, 40, 47, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 56px 20px 90px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #E9F6F2;
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      margin: 0 0 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 16px;
+      margin: 0;
+      max-width: 46ch;
+      margin-inline: auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+
+    .dropzone {
+      border: 2px dashed #D6CFC0;
+      border-radius: 12px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--teal);
+      background: #F5FBF9;
+    }
+    .dropzone svg { margin-bottom: 10px; }
+    .dropzone p { margin: 0; font-size: 14px; color: var(--muted); }
+    .dropzone strong { color: var(--ink); }
+    .dropzone input[type="file"] { display: none; }
+    .file-name {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--teal-dark);
+      font-weight: 600;
+      display: none;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      color: #B8B1A2;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 20px 0;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span { padding: 0 12px; }
+
+    textarea {
+      width: 100%;
+      background: #FCFBF8;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      padding: 14px;
+      resize: vertical;
+    }
+    textarea:focus, .dropzone:focus-within {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(46, 158, 134, 0.15);
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .example-btn {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--teal-dark);
+      background: #F0F9F6;
+      border: 1px solid #D5EEE7;
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .example-btn:hover { background: #E1F3EE; }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background .15s ease, transform .1s ease;
+    }
+    .submit-btn:hover { background: var(--teal-dark); }
+    .submit-btn:active { transform: scale(0.99); }
+
+    .results-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .results-header h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      margin: 0;
+    }
+    .stat-line {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .stat-line strong { color: var(--ink); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      background: #F4F2EC;
+      color: var(--ink);
+      border: 1.5px solid transparent;
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .legend-pill .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .legend-pill .count { color: var(--muted); font-weight: 400; }
+    .legend-pill.active { border-color: currentColor; background: #fff; box-shadow: var(--shadow); }
+    .legend-pill.all-pill.active { border-color: var(--ink); }
+
+    .entity-output {
+      font-size: 16px;
+      line-height: 2;
+    }
+    .entity-output mark.entity {
+      border-radius: 6px !important;
+    }
+    .entity-output mark.entity.dim {
+      opacity: 0.2;
+    }
+
+    details.original-text {
+      margin-top: 22px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    details.original-text summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    details.original-text p {
+      font-size: 14.5px;
+      color: var(--ink);
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px 10px 4px;
+      font-size: 14.5px;
+    }
+    .empty-state svg { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Find the people, places &amp; dates hiding in your text</h1>
+      <p class="tagline">Upload a file or paste text below and see the<br> M A G I C (kinda chic)</p>
+    </header>
+
+    <div class="card">
+      <form id="ner-form" action="/entity" method="post" enctype="multipart/form-data">
+        <label class="dropzone" id="dropzone" for="file">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2E9E86" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+            <polyline points="7 9 12 4 17 9"/>
+            <line x1="12" y1="4" x2="12" y2="16"/>
+          </svg>
+          <p><strong>Click to upload</strong> or drag a .txt file here</p>
+          <div class="file-name" id="file-name"></div>
+          <input type="file" name="file" id="file">
+        </label>
+
+        <div class="divider"><span>or paste text</span></div>
+
+        <textarea name="text_input" id="text_input" rows="6" placeholder="Paste or type a sentence, article, or paragraph..."></textarea>
+
+        <div class="examples">
+          <button type="button" class="example-btn" data-example="business">Try a business example</button>
+          <button type="button" class="example-btn" data-example="sports">Try a sports example</button>
+          <button type="button" class="example-btn" data-example="history">Try a history example</button>
+        </div>
+
+        <button type="submit" class="submit-btn">Analyze text →</button>
+      </form>
+    </div>
+
+    <div class="card">
+      {% if html and text %}
+        <div class="results-header">
+          <h2>Tagged results</h2>
+          {% if entity_stats %}
+          <span class="stat-line"><strong>{{ total_entities }}</strong> entities · <strong>{{ word_count }}</strong> words · {{ entity_density }}% density</span>
+          {% endif %}
+        </div>
+
+        {% if entity_stats %}
+        <div class="legend" id="legend">
+          <button type="button" class="legend-pill all-pill active" data-label="all">All</button>
+          {% for label, count in entity_stats %}
+          <button type="button" class="legend-pill" data-label="{{ label }}" style="color: {{ entity_colors.get(label, '#6B7280') }};">
+            <span class="dot" style="background: {{ entity_colors.get(label, '#6B7280') }};"></span>
+            {{ label|lower }} <span class="count">{{ count }}</span>
+          </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="entity-output" id="entity-output">{{ html|safe }}</div>
+
+        <details class="original-text">
+          <summary>Show original text</summary>
+          <p>{{ text }}</p>
+        </details>
+      {% else %}
+        <div class="empty-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#B8B1A2" stroke-width="1.5">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <p>Nothing analyzed yet — upload a file or paste text above to see results here.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    // Drag & drop + file picker
+    (function () {
+      var dropzone = document.getElementById('dropzone');
+      var fileInput = document.getElementById('file');
+      var fileName = document.getElementById('file-name');
+
+      fileInput.addEventListener('change', function () {
+        if (fileInput.files.length) {
+          fileName.textContent = '📄 ' + fileInput.files[0].name;
+          fileName.style.display = 'block';
+        }
+      });
+
+      ['dragover', 'dragleave', 'drop'].forEach(function (evt) {
+        dropzone.addEventListener(evt, function (e) { e.preventDefault(); });
+      });
+      dropzone.addEventListener('dragover', function () { dropzone.classList.add('dragover'); });
+      dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
+      dropzone.addEventListener('drop', function (e) {
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          fileName.textContent = '📄 ' + e.dataTransfer.files[0].name;
+          fileName.style.display = 'block';
+        }
+      });
+    })();
+
+    // Example text quick-fill
+    (function () {
+      var examples = {
+        business: "Apple Inc. announced on Monday that Tim Cook will visit New Delhi next January to meet with Prime Minister Narendra Modi. The company plans to invest $2 billion in a new manufacturing facility in Karnataka.",
+        sports: "Lionel Messi scored twice as Inter Miami defeated the Los Angeles Galaxy 3-1 at Chase Stadium on Saturday evening, keeping Miami on top of the Eastern Conference standings.",
+        history: "Mahatma Gandhi was born on 2 October 1869 in Porbandar, Gujarat. He studied law at University College London before leading India's independence movement against the British Empire."
+      };
+      document.querySelectorAll('.example-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.getElementById('text_input').value = examples[btn.getAttribute('data-example')];
+        });
+      });
+    })();
+
+    // Click-to-filter entity legend
+    (function () {
+      var buttons = document.querySelectorAll('.legend-pill');
+      var marks = document.querySelectorAll('#entity-output mark.entity');
+      if (!buttons.length || !marks.length) return;
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var label = btn.getAttribute('data-label');
+          marks.forEach(function (m) {
+            if (label === 'all' || m.getAttribute('data-label') === label) {
+              m.classList.remove('dim');
+            } else {
+              m.classList.add('dim');
+            }
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

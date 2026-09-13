@@ -49,30 +49,6 @@ Then install the English spaCy model:
 python -m spacy download en_core_web_sm
 ```
 
-### ⚠️ One thing in this project needs fixing
-
-Your `app.py` has:
-
-```
-return render_template('index.html')
-```
-
-But `index.html` is currently in the same folder as `app.py`, whereas Flask expects HTML files inside a `templates` folder.
-
-So make the structure:
-
-```
-Name-Entity-Recognition-App-Natural-Language-Processing-main/
-│
-├── app.py
-├── README.md
-│
-└── templates/
-    └── index.html
-```
-
-Basically: create a folder called `templates` → move `index.html` into it.
-
 ### 4. Run it
 
 With the virtual environment still activated:
